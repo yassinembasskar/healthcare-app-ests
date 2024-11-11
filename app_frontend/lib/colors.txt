@@ -1,0 +1,17 @@
+background :
+Color(0xFFD7EFF7)
+
+dark : 
+Color(0xFF519CD7)
+
+
+
+
+// boxShadow: [
+//                         BoxShadow(
+//                           color: Colors.grey.withOpacity(0.5), // Color of the shadow
+//                           spreadRadius: 5, // Spread radius
+//                           blurRadius: 7, // Blur radius
+//                           offset: Offset(0, 3), // Offset of the shadow
+//                         ),
+//                   ],
