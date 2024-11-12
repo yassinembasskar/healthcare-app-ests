@@ -4,6 +4,11 @@ import pandas as pd
 
 import pickle
 import json
+import os
+
+script_dir = os.path.dirname(__file__)
+
+model_path = os.path.join(script_dir, 'HFModel.pkl')
 
 
 def main():
@@ -26,7 +31,7 @@ def main():
     # print(df)
 
     # print('Before loading model')
-    with open('src\heartfailure\HFModel.pkl', 'rb') as file:
+    with open(model_path, 'rb') as file:
         HF_model = pickle.load(file)
 
     # print('Before prediction model')
