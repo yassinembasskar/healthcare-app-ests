@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Admin, Repository } from 'typeorm';
 import { User } from './user.entity';
 import * as bcrypt from 'bcrypt';
-import { InvalidEmailException } from 'src/exceptions/invalid-email.exception';
 import { EmailAlreadyExist } from 'src/exceptions/email-exist.exception';
 import { FullNameAlreadyExist } from 'src/exceptions/fullname-exist.exception';
 import { InvalidPassword } from 'src/exceptions/password-incorrect.exception';
@@ -11,6 +10,7 @@ import { NotSecurePassword } from 'src/exceptions/passwordnotsecure.exception';
 import { HeartFailure } from 'src/heartfailure/HeartFailure.entity';
 import { BrainStroke } from 'src/brainstroke/BrainStroke.entity';
 import { admin } from '../admin/admin.entity';
+import { STATUS_CODES } from 'http';
 
 
 @Injectable()
@@ -88,7 +88,6 @@ export class UserService {
 
     async createUser(user: User): Promise<User> {
         try {
-
             const hashedPassword = await bcrypt.hash(user.password, 10);
             
             const fullNameAdmin = await this.adminRepository.findOne({ where :{username: user.fullName} });
@@ -121,7 +120,7 @@ export class UserService {
           if (error instanceof EmailAlreadyExist || error instanceof FullNameAlreadyExist) {
             throw error;
           }
-          throw new InternalServerErrorException('An error occurred while creating the user');
+          throw new InternalServerErrorException('An error occurred while creating the user' + error);
         }
       }
       
@@ -140,8 +139,14 @@ export class UserService {
       return this.userRepository.find();
     }
     
-    async deleteuser(idPatient:number):Promise<any>{
-      return this.userRepository.delete({idPatient});
+    async deleteUser(idPatient: number): Promise<any> {
+      const user = await this.userRepository.findOne({ where: { idPatient } });
+    
+      if (!user) {
+        throw new Error(`User not found.`);
+      }
+    
+      return this.userRepository.delete({ idPatient });
     }
 }
 

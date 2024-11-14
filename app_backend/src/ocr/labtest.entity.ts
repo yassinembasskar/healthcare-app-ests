@@ -7,7 +7,7 @@ export class LabTestEntity {
   @PrimaryGeneratedColumn()
   test_id: number;
 
-  @ManyToOne(() => User, user => user.labTests, { eager: true })
+  @ManyToOne(() => User, user => user.labTests, {onDelete: 'CASCADE', eager: true })
   @JoinColumn({ name: 'patient_id' }) 
   patient: User;
 

@@ -6,7 +6,7 @@ import os
 
 script_dir = os.path.dirname(__file__)
 
-model_path = os.path.join(script_dir, 'HFModel.pkl')
+model_path = os.path.join(script_dir, 'HeartFailureModel(1.5.2).pkl')
 
 
 def main():
@@ -14,15 +14,9 @@ def main():
 
 
     data =sys.argv[1:]  
-    
-    columns = ['age', 'anaemia', 'creatinine',
-                'diabetes', 'high_blood_pressure',
-                  'platelets',
-                   'serum_creatinine', 'serum_sodium', 
-                   'sex', 'smoking','time']
 
     
-    df = pd.DataFrame([data], columns=columns)
+    df = pd.DataFrame([data])
 
 
     with open(model_path, 'rb') as file:

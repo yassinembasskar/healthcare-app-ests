@@ -8,6 +8,7 @@ export class UserController {
 
   @Post('signup')
   async signUp(@Body()user : User): Promise<User> {
+    console.log('hi');
      return this.userService.createUser(user);    
   }
 
@@ -34,7 +35,7 @@ export class UserController {
 
   @Post('delete')
   async deleteuser(@Body('id_patient') id_patient:number){
-    return this.userService.deleteuser(id_patient)
+    return this.userService.deleteUser(id_patient)
   }
 
 }

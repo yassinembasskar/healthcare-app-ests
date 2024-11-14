@@ -6,7 +6,7 @@ export class BrainStroke {
   @PrimaryGeneratedColumn({ })
   BrainStroke_prediction_id: number;
 
-  @ManyToOne(() => User, user => user.brainStrokes, { nullable: false }) // Set cascade if necessary
+  @ManyToOne(() => User, user => user.brainStrokes, {onDelete: 'CASCADE', nullable: false }) // Set cascade if necessary
   patient: User;
 
   @Column({ default: null })

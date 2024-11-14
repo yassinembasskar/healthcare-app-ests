@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, Get, HttpException, HttpStatus, NotFoundException } from '@nestjs/common';
 import { BrainStrokeService } from './BrainStroke.service';
 import { BrainStrokeDTO } from './BrainStroke.dto';
 import { Logger } from '@nestjs/common';
@@ -24,19 +24,21 @@ export class BrainStrokeController {
     try {
       return await this.brainStrokeService.saveComponents(brainStrokeDTO);
     } catch (error) {
-      this.logger.error(`Failed to save components for patient ID: ${brainStrokeDTO.patient.idPatient}`, error.stack);
       throw new HttpException('Unable to save components', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   @Post('Prediction')
-  async getpredictino(@Body('id_patient') id_patient : number){
+  async getprediction(@Body('id_patient') id_patient : number){
     try {
-      console.log('hi there')
-      return this.brainStrokeService.getpredictionbyuserid(id_patient);
-    } catch (error) {
-      console.log('shit')
-      throw new HttpException('Error fetching prediction', HttpStatus.INTERNAL_SERVER_ERROR);
+      const prediction = await this.brainStrokeService.getpredictionbyuserid(id_patient);
+      if (!prediction || Object.values(prediction).some(value => value === null || value === 'unknown')) {
+        throw new NotFoundException('Prediction data is incomplete or missing for this user.');
+      }
+  
+      return prediction;
+    } catch (exception) {
+      throw new NotFoundException('Error fetching prediction: ' + exception.message);
     }
   }
 }

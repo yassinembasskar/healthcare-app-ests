@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, NotFoundException, BadRequestException, HttpException, HttpStatus } from '@nestjs/common';
 import { HeartFailureService } from './HeartFailure.service';
 import { HeartFailureDTO } from './HeartFailure.dto';
 
@@ -13,18 +13,26 @@ export class HeartFailureController {
 
   @Post('SaveComponents')
   async savecomponenets(@Body()HeartFailureDTO : HeartFailureDTO){
-
-    return this.HeartFailureService.saveComponents(HeartFailureDTO);
+      try {
+          return this.HeartFailureService.saveComponents(HeartFailureDTO);
+      } catch (error) {
+        throw new HttpException('Unable to save components', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
   }
 
   @Post('prediction')
-  async getprediction(@Body('id_patient')id_patient:number){
-    return this.HeartFailureService.getpredictionbyuserid(id_patient);
-  }
-  @Post('py')
-  async py(){
-    this.HeartFailureService.runPythonScript('HeartFailure.py',['1111','122222']);
-  }
+  async getprediction(@Body('id_patient') id_patient: number) {
+    try {
+        const prediction = await this.HeartFailureService.getpredictionbyuserid(id_patient);
+
+        if (!prediction || Object.values(prediction).some(value => value === null || value === undefined)) {
+            throw new BadRequestException('Prediction data is incomplete or missing for this user.');
+        }
+        return prediction;
+    } catch (exception) {
+        throw exception;
+    }
+}
 
 
 }

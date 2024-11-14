@@ -6,7 +6,7 @@ export class HeartFailure {
   @PrimaryGeneratedColumn({ })
   HearthFailure_prediction_id: number;
 
-  @ManyToOne(() => User, user => user.heartFailures, { nullable: false }) // Set cascade if necessary
+  @ManyToOne(() => User, user => user.heartFailures, {onDelete: 'CASCADE', nullable: false }) // Set cascade if necessary
   patient: User;
 
   @Column({ default: null })

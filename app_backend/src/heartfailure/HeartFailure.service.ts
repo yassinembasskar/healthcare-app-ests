@@ -1,5 +1,5 @@
 // user.service.ts
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { HeartFailure } from './HeartFailure.entity';
@@ -26,72 +26,84 @@ export class HeartFailureService {
     }
 
     async saveComponents(heartFailureDTO: HeartFailureDTO): Promise<HeartFailure> {
-          try {
-              const { patient } = heartFailureDTO;
-              const existingRecord = await this.heartFailureRepository.findOne({ where: { patient } });
-
-              if (existingRecord) {
-                  Object.assign(existingRecord, heartFailureDTO); // Update existing record fields
-                  return await this.heartFailureRepository.save(existingRecord);
-              } else {
-                  const newRecord = this.heartFailureRepository.create(heartFailureDTO);
-                  return await this.heartFailureRepository.save(newRecord);
-              }
-          } catch (error) {
-              throw new InternalServerErrorException('Failed to save heart failure components');
-          }   
-      }
-
-      async getpredictionbyuserid(id_patient : number):Promise<any>{
-        const patient = await this.userService.getUserById(id_patient);
-        const HF = await this.heartFailureRepository.findOne({ where: { patient } });
-        var gender  = 1; 
-        if ((patient).gender = "Female")  gender = 0 ; 
-        const age  = calculateAge((patient).birthday) ; 
-        const diabetes = (HF).diabetes  ; 
-        const anaemia = (HF).anaemia ; 
-        const creatinine_phosphokinase = (HF).creatinine_phosphokinase ; 
-        const high_blood_pressure = (HF).high_blood_pressure;
-        const platelets = (HF).platelets ; 
-        const serum_creatinine = (HF).serum_creatinine ; 
-        const serum_sodium = (HF).serum_sodium ; 
-        const smoking = (HF).smoking ; 
-        const time = (HF).time ; 
-
-        return this.runPythonScript('heartfailure.py',[age,anaemia,creatinine_phosphokinase , diabetes , high_blood_pressure
-          ,platelets , serum_creatinine,serum_sodium, gender,smoking,time])
-      }
-
-
-
-
-      async runPythonScript(scriptName: string, args?: any[]): Promise<string | null> {
-        return new Promise((resolve, reject) => {
-          const { exec } = require('child_process');
-          const argsString = args ? args.join(' ') : '';
-          const command = `python src\\heartfailure\\heartfailure.py ${argsString}`;
-          console.log('args')
-          console.log({ argsString })
-      
-          exec(command, (error, stdout, stderr) => {
-            if (error) {     
-              console.log(`error: ${error.message}`);
-              reject(error.message); 
-            } else if (stderr) {
-              console.log(`stderr: ${stderr}`);
-              reject(stderr); 
+        try {
+            const existingRecord = await this.heartFailureRepository.findOne({ where: { patient: heartFailureDTO.patient } });
+            if (existingRecord) {
+                Object.assign(existingRecord, heartFailureDTO); 
+                return await this.heartFailureRepository.save(existingRecord);
             } else {
-              console.log(stdout);
-              const trimmedOutput = stdout.trim();
-              resolve(trimmedOutput);
+                return await this.heartFailureRepository.save(heartFailureDTO);
             }
-          });
-        });
-      }
-      
-   
+        } catch (error) {
+        console.error('Error processing heart failure data:', error);
 
-   
+        // Re-throw with a user-friendly message
+        if (error['statusCode']) {
+            throw new Error(`${error.message}`);
+        } else {
+            throw new Error('Failed to process heart failure data. Please ensure all required information is filled and try again.');
+        }
+    }  
+    }
+
+    async getpredictionbyuserid(id_patient: number): Promise<any> {
+        try {
+            const patient = await this.userService.getUserById(id_patient);
+            if (!patient) {
+              throw new NotFoundException(`User not found.`);
+            }
+            const heartFailureData = await this.heartFailureRepository.findOne({ where: { patient } });
+            if (!heartFailureData) {
+                throw new NotFoundException(`Heart failure data for user not found.`);
+            }
+            const gender = patient.gender === "Female" ? 0 : 1;
+            const age = calculateAge(patient.birthday);
+            if (isNaN(age)) {
+                throw new BadRequestException('Invalid birthday format. Unable to calculate age.');
+            }
+            const userValues = [
+                age,
+                heartFailureData.anaemia?.toString(),
+                heartFailureData.creatinine_phosphokinase?.toString(),
+                heartFailureData.diabetes?.toString(),
+                heartFailureData.high_blood_pressure?.toString(),
+                heartFailureData.platelets?.toString() || null,
+                heartFailureData.serum_creatinine?.toString(),
+                heartFailureData.serum_sodium?.toString(),
+                gender.toString(),
+                heartFailureData.smoking?.toString(),
+                heartFailureData.time?.toString()
+            ];
+            const hasIncompleteInfo = userValues.some(value => value === null || value === undefined);
+            if (hasIncompleteInfo) {
+                throw new BadRequestException('All fields must be filled with valid information.');
+            }
+            return this.runPythonScript(userValues);
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async runPythonScript(args?: any[]): Promise<string | null> {
+      return new Promise((resolve, reject) => {
+          try {
+              const { exec } = require('child_process');
+              const argsString = args ? args.join(' ') : '';
+              const command = `python src\\heartfailure\\heartfailure.py ${argsString}`;
+              exec(command, (error, stdout, stderr) => {
+                  if (error) {
+                      reject(new Error(`Execution error: ${error.message}`));
+                  } else if (stderr) {
+                      reject(new Error(`Script error: ${stderr.trim()}`));
+                  } else {
+                      resolve(stdout.trim());
+                  }
+              });
+          } catch (err) {
+              reject(new Error(`Unexpected error: ${err instanceof Error ? err.message : String(err)}`));
+          }
+      });
+    }
 }
 
 
