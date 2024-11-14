@@ -22,6 +22,7 @@ export class AuthController {
     }
   }
 
+
   @Post('logged')
   async logged(@Body() body: { userId: number; password: string, role: string }): Promise<any> {
     const {userId, password, role} = body;

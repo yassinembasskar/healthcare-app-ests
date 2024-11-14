@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserService } from '../patient/user.service';
 import { User } from '../patient/user.entity';
 import * as bcrypt from 'bcrypt';
@@ -22,11 +22,11 @@ export class AuthService {
     ]);
 
     if (user) {
-      if(await bcrypt.checkpw(password, user.password)){
+      if(await bcrypt.compare(password, user.password)){
         return user;
       }  
     }else if (admin){
-      if(await bcrypt.checkpw(password, admin.password)){
+      if(await bcrypt.compare(password, admin.password)){
         return admin;
       } else {
         throw new InvalidPassword();
@@ -37,10 +37,11 @@ export class AuthService {
   }
 
   async validateUserId(userId: number, password: string, role: string): Promise<User|admin> {
-    const [user, admin] = await Promise.all([
-      await this.userService.getUserById(userId),
-      await this.adminservice.getAdminById(userId),
-    ]);
+    let user = null;
+    let admin = null;
+    if (role = "patient") {user = await this.userService.getUserById(userId);}
+    else if (role = "admin"){admin = await this.adminservice.getAdminById(userId);}
+    else {throw new NotFoundException();}
     
     if (user && role == 'patient') {
       if(password == user.password){
