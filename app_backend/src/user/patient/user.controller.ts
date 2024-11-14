@@ -13,7 +13,6 @@ export class UserController {
 
   @Post('update_infos')
   async updateInfos(@Body()user : User): Promise<User> {
-    console.log('updateinfos: '+ user.idPatient);
     return this.userService.updateInfos(user);    
  }
  
@@ -25,8 +24,7 @@ export class UserController {
    
   @Post('user')
   async getpatientbyid(@Body('id_patient') id_patient:number){
-    console.log('getpateintbyid : '+ id_patient);
-    return this.userService.getuserbyid(id_patient);
+    return this.userService.getUserById(id_patient);
   }
 
   @Get('getusers')

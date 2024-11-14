@@ -1,6 +1,5 @@
 import { Controller, Post, Body } from '@nestjs/common';
 import { HeartFailureService } from './HeartFailure.service';
-import { HeartFailure } from './HeartFailure.entity';
 import { HeartFailureDTO } from './HeartFailure.dto';
 
 @Controller('HeartFailure')

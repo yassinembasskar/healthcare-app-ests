@@ -1,15 +1,14 @@
 // ocr.service.ts
-import { ConsoleLogger, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import * as childProcess from 'child_process';
 import { promisify } from 'util';
-import { User } from 'src/user/user.entity';
+import { User } from 'src/user/patient/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { LabTestEntity } from './labtest.entity';
 import { ExtractionEntity } from './extraction.entity';
 import { BrainStroke } from 'src/brainstroke/BrainStroke.entity';
 import { HeartFailure } from 'src/heartfailure/HeartFailure.entity';
-import { promises } from 'dns';
 
 
 const exec = promisify(childProcess.exec);
@@ -32,33 +31,35 @@ export class OcrService {
   ){}   
   async processImage(imagePath: string, id: number): Promise<{labtest: LabTestEntity,  extractions: ExtractionEntity[] }> {
     try {
+
+      //here we execute the python code
       const patient = await this.userRepository.findOne({ where: { idPatient : id } });
       const gender = patient.gender;
       const age = this.calculateAge(patient.birthday);
       const { stdout, stderr } = await exec(`python decryption.py ${imagePath} ${gender} ${age}`);
       if (stderr) { 
         throw new Error(stderr);
-    }
-    console.log(stdout)
+      }
+
+      //here we extract entities from output
       var ocrResults = stdout.trim(); 
-      console.log(ocrResults)
       ocrResults = ocrResults.substring(2, ocrResults.length - 2);
       var results = ocrResults.split('}, {');
       var correctedResults = results.map(result => result.replace(/'/g, '"'));
-      const labtestCount = await this.labtestRepository.count({ where: { id_patient: id } });
-      console.log(patient.idPatient);
+
+
+      const labtestCount = await this.labtestRepository.count({ where: { patient } });
       const labtest = await this.labtestRepository.create({
-        id_patient: patient.idPatient,
+        patient: patient,
         test_date: new Date(),
         test_name: `Labtest ${labtestCount + 1}`,
       });
-      console.log('ID Patient:', labtest.id_patient);
-      console.log(labtest);
+
       const extractions: ExtractionEntity[] = [];
       for(const result of correctedResults)  {
         const dataArray = JSON.parse(`{${result}}`);
         const extraction = this.extractionRepository.create({
-          test_id: -1,
+          test: null,
           name_substance: dataArray.identifiant,
           value_substance: dataArray.value,
           mesure_substance: dataArray.mesurement,
@@ -89,12 +90,12 @@ export class OcrService {
     return age;
   }
   async  saveTests(labtest: LabTestEntity,  extractions: ExtractionEntity[] ): Promise<void> {
-    const brainStroke = await this.brainstrokeRepository.findOne({ where: { id_patient: labtest.id_patient } });
-    const heartFailure = await this.heartfailureRepository.findOne({ where: { id_patient: labtest.id_patient } });
+    const brainStroke = await this.brainstrokeRepository.findOne({ where: { patient: labtest.patient } });
+    const heartFailure = await this.heartfailureRepository.findOne({ where: { patient: labtest.patient } });
     const savedLabtest = await this.labtestRepository.save(labtest);
-    console.log("the labtest saved seccessfully");
+    
     await Promise.all(extractions.map(async (extraction) => {
-      extraction.test_id = savedLabtest.test_id;
+      extraction.test = savedLabtest;
       if (extraction.name_substance.toLowerCase().includes('glycem') || extraction.name_substance.toLowerCase().includes('glucose') ) {
         console.log("saved glucose");
         console.log("saved diabetes");
@@ -110,6 +111,7 @@ export class OcrService {
           heartFailure.diabetes = 0;
         }
       }
+
       if (extraction.name_substance.toLowerCase().includes('platelet')) {
         console.log("saved platelets");
         const int_value = parseInt(extraction.value_substance);
@@ -119,6 +121,7 @@ export class OcrService {
           heartFailure.platelets = int_value; 
         }
       }
+
       if (extraction.name_substance.toLowerCase().includes('cpk') || extraction.name_substance.toLowerCase().includes('creatinine phosphokinase')) {
         console.log("saved cpk");
         const int1_value = parseFloat(extraction.value_substance);
@@ -136,6 +139,7 @@ export class OcrService {
           heartFailure.serum_creatinine = int2_value; 
         }
       }
+
       if (extraction.name_substance.toLowerCase().includes('sodium')) {
         console.log("saved sodium");
         const int3_value = parseFloat(extraction.value_substance);
@@ -145,6 +149,7 @@ export class OcrService {
           heartFailure.serum_sodium = int3_value; 
         } 
       }
+
       if (extraction.name_substance.toLowerCase().includes('hemoglobine')) {
         console.log("saved anemia");
         if (extraction.interpretation == 'low'){
@@ -153,6 +158,7 @@ export class OcrService {
           heartFailure.anaemia = 0;
         }
       }
+
       await this.heartfailureRepository.save(heartFailure);
       await this.brainstrokeRepository.save(brainStroke);
       return await this.extractionRepository.save(extraction);
@@ -161,13 +167,14 @@ export class OcrService {
 
   }
 
-  async getlabtestbyuserid(id_patient:number):Promise<LabTestEntity[]>{
-    return this.labtestRepository.find({where : {id_patient}})
-
+  async getlabtestbyuserid(idPatient:number):Promise<LabTestEntity[]>{
+    const patient = await this.userRepository.findOne({ where :{idPatient} });
+    return this.labtestRepository.find({where : {patient}})
   }
 
   async getextractionsbytestid(test_id : number):Promise<ExtractionEntity[]>{
-    return this.extractionRepository.find({where:{test_id}})
+    const test = await this.labtestRepository.findOne({ where :{test_id} });
+    return this.extractionRepository.find({where:{test}})
   }
 }
 

@@ -1,6 +1,5 @@
 import { Controller, Post, Body, Get, HttpException, HttpStatus } from '@nestjs/common';
 import { BrainStrokeService } from './BrainStroke.service';
-import { BrainStroke } from './BrainStroke.entity';
 import { BrainStrokeDTO } from './BrainStroke.dto';
 import { Logger } from '@nestjs/common';
 
@@ -23,22 +22,21 @@ export class BrainStrokeController {
   @Post('SaveComponents')
   async savecomponenets(@Body()brainStrokeDTO : BrainStrokeDTO){
     try {
-      this.logger.log(`Saving components for patient ID: ${brainStrokeDTO.id_patient}`);
       return await this.brainStrokeService.saveComponents(brainStrokeDTO);
     } catch (error) {
-      this.logger.error(`Failed to save components for patient ID: ${brainStrokeDTO.id_patient}`, error.stack);
+      this.logger.error(`Failed to save components for patient ID: ${brainStrokeDTO.patient.idPatient}`, error.stack);
       throw new HttpException('Unable to save components', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   @Post('Prediction')
-  async getpredictino(@Body('id_patient')id_patient : number){
+  async getpredictino(@Body('id_patient') id_patient : number){
     try {
-      return await this.brainStrokeService.getpredictionbyuserid(id_patient);
+      console.log('hi there')
+      return this.brainStrokeService.getpredictionbyuserid(id_patient);
     } catch (error) {
+      console.log('shit')
       throw new HttpException('Error fetching prediction', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-
-
 }

@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from 'src/user/user.entity';
+import { User } from 'src/user/patient/user.entity';
 import { LabTestEntity } from './labtest.entity';
 import { ExtractionEntity } from './extraction.entity';
 import { OcrService } from './ocr.service';

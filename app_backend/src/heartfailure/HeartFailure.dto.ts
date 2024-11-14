@@ -1,8 +1,9 @@
+import { User } from "src/user/patient/user.entity";
 import { HeartFailure } from "./HeartFailure.entity";
 
 export class HeartFailureDTO {
   HearthFailure_prediction_id: number;
-  id_patient: number;
+  patient: User;
   anaemia: number;
   diabetes: number;
   creatinine_phosphokinase: number  ;
@@ -15,7 +16,7 @@ export class HeartFailureDTO {
 
   constructor(heartFailure: HeartFailure) {
     this.HearthFailure_prediction_id = heartFailure.HearthFailure_prediction_id;
-    this.id_patient = heartFailure.id_patient;
+    this.patient = heartFailure.patient;
     this.anaemia = heartFailure.anaemia;
     this.diabetes = heartFailure.diabetes;
     this.creatinine_phosphokinase = heartFailure.creatinine_phosphokinase;

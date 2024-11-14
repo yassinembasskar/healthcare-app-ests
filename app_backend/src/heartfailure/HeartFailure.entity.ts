@@ -1,12 +1,13 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from 'src/user/patient/user.entity';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 
 @Entity({name:'HeartFailure_prediction'})
 export class HeartFailure {
   @PrimaryGeneratedColumn({ })
   HearthFailure_prediction_id: number;
 
-  @Column({})
-  id_patient: number;
+  @ManyToOne(() => User, user => user.heartFailures, { nullable: false }) // Set cascade if necessary
+  patient: User;
 
   @Column({ default: null })
   anaemia: number;
@@ -34,6 +35,4 @@ export class HeartFailure {
 
   @Column({default: null})
   time: number;
-
-
 }

@@ -1,12 +1,13 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from 'src/user/patient/user.entity';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 
 @Entity({name:'BrainStroke_prediction'})
 export class BrainStroke {
   @PrimaryGeneratedColumn({ })
   BrainStroke_prediction_id: number;
 
-  @Column({})
-  id_patient: number;
+  @ManyToOne(() => User, user => user.brainStrokes, { nullable: false }) // Set cascade if necessary
+  patient: User;
 
   @Column({ default: null })
   hypertension?: boolean;

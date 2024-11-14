@@ -1,22 +1,25 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, ManyToOne } from 'typeorm';
+import { LabTestEntity } from './labtest.entity';
 
 @Entity({name:'extractions'})
 export class ExtractionEntity {
   @PrimaryGeneratedColumn()
   id_extractions: number;
 
-  @Column()
-  test_id: number;
+  @ManyToOne(() => LabTestEntity, labTest => labTest.extractions, { eager: true })
+  @JoinColumn({ name: 'test_id' })
+  test: LabTestEntity;
 
-  @Column()
+  @Column({ nullable: true })
   name_substance?: string;
 
   @Column()
   value_substance: string;
 
-  @Column({default: '--'})
-  mesure_substance?: string = '--';
+  @Column({ default: '--', nullable: true })
+  mesure_substance?: string;
 
-  @Column({default: 'unidentified'})
-  interpretation: string; 
+  @Column({ default: 'unidentified' })
+  interpretation: string;
+  
 }

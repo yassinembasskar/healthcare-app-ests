@@ -6,7 +6,7 @@ import { BrainStroke } from './BrainStroke.entity';
 import { BrainStrokeDTO } from './BrainStroke.dto';
 import * as path from 'path';
 import { spawn } from 'child_process';
-import { UserService } from 'src/user/user.service';
+import { UserService } from 'src/user/patient/user.service';
 
 
 @Injectable()
@@ -19,11 +19,12 @@ export class BrainStrokeService {
     ) {}
 
     async getpredictioncomponenetsbyuserid(id_patient:number):Promise<BrainStroke|null>{
-        return this.BrainStrokeRepository.findOne({where:{id_patient}}) ;
+        const patient = await this.userService.getUserById(id_patient);
+        return this.BrainStrokeRepository.findOne({where:{patient}}) ;
     }
 
     async saveComponents(brainStrokeDTO: BrainStrokeDTO): Promise<BrainStroke> {
-        const existingRecord = await this.BrainStrokeRepository.findOne({ where: { id_patient: brainStrokeDTO.id_patient } });
+        const existingRecord = await this.BrainStrokeRepository.findOne({ where: { patient: brainStrokeDTO.patient } });
         if (existingRecord) {
             Object.assign(existingRecord, brainStrokeDTO);
             return this.BrainStrokeRepository.save(existingRecord);
@@ -34,8 +35,9 @@ export class BrainStrokeService {
         
 
       async getpredictionbyuserid(id_patient:number):Promise<any>{
-        const brainStrokeData = await this.BrainStrokeRepository.findOne({ where: { id_patient } });
-        const user = await this.userService.getuserbyid(id_patient);
+        const patient = await this.userService.getUserById(id_patient);
+        const brainStrokeData = await this.BrainStrokeRepository.findOne({ where: { patient } });
+        const user = await this.userService.getUserById(id_patient);
         const userValues = [
             user.gender,
             calculateAge(user.birthday).toString(),
@@ -48,14 +50,13 @@ export class BrainStrokeService {
             brainStrokeData?.bmi.toString(),
             brainStrokeData?.smoking_status
         ];
-
         return this.processAndRunScript(userValues);
       }
 
       async processAndRunScript(values: string[]): Promise<any> {
         const transformedValues = this.transformCategoricalToNumbers(...values);
         return await this.runPythonScript('brainstroke.py', transformedValues);
-    }
+      }
 
       private transformCategoricalToNumbers(...values: string[]): number[] {
 
@@ -112,7 +113,7 @@ export class BrainStrokeService {
 
       
   async runPythonScript(scriptName: string, args?: number[]): Promise<string|null|any> {
-    const scriptPath = path.join(__dirname, scriptName);
+        const scriptPath = path.resolve(__dirname, '../../src/brainstroke/', scriptName);
         return new Promise((resolve, reject) => {
             const pythonProcess = spawn('python', [scriptPath, ...args.map(String)]);
             let output = '';

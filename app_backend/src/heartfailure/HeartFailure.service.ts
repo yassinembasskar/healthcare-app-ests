@@ -1,12 +1,10 @@
 // user.service.ts
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { HeartFailure } from './HeartFailure.entity';
 import { HeartFailureDTO } from './HeartFailure.dto';
-import * as path from 'path';
-import { exec } from 'child_process';
-import { UserService } from 'src/user/user.service';
+import { UserService } from 'src/user/patient/user.service';
 
 
 @Injectable()
@@ -14,56 +12,51 @@ export class HeartFailureService {
 
     constructor(
         @InjectRepository(HeartFailure)
-        private readonly HeartFailureRepository: Repository<HeartFailure>,
+        private readonly heartFailureRepository: Repository<HeartFailure>,
         private readonly userService: UserService , 
     ) {}
 
     
     async getpredictioncomponenetsbyuserid(id_patient:number):Promise<HeartFailure|null>{
-        
-        
-        return this.HeartFailureRepository.findOne({where:{id_patient}}) ;
+      try {
+        return await this.heartFailureRepository.findOne({ where: { patient: { idPatient: id_patient } } });
+    } catch (error) {
+        throw new InternalServerErrorException('Failed to retrieve prediction components');
+    }
     }
 
-    async saveComponents(HeartFailureDTO: HeartFailureDTO): Promise<HeartFailure> {
-        const id_patient =  HeartFailureDTO.id_patient  ; 
-        const existingRecord = await this.HeartFailureRepository.findOne({where :{ id_patient }});
-        
-        if (existingRecord) {
+    async saveComponents(heartFailureDTO: HeartFailureDTO): Promise<HeartFailure> {
+          try {
+              const { patient } = heartFailureDTO;
+              const existingRecord = await this.heartFailureRepository.findOne({ where: { patient } });
 
-            existingRecord.anaemia = HeartFailureDTO.anaemia;
-            existingRecord.diabetes = HeartFailureDTO.diabetes;
-            existingRecord.creatinine_phosphokinase = HeartFailureDTO.creatinine_phosphokinase;
-            existingRecord.high_blood_pressure = HeartFailureDTO.high_blood_pressure;
-            existingRecord.platelets = HeartFailureDTO.platelets;
-            existingRecord.serum_creatinine = HeartFailureDTO.serum_creatinine;
-            existingRecord.serum_sodium = HeartFailureDTO.serum_sodium;
-            existingRecord.time = HeartFailureDTO.time  ;
-            existingRecord.smoking = HeartFailureDTO.smoking  ;
-      
-          
-          return this.HeartFailureRepository.save(existingRecord);
-        } else {
-          
-          return this.HeartFailureRepository.save(HeartFailureDTO);
-        }
+              if (existingRecord) {
+                  Object.assign(existingRecord, heartFailureDTO); // Update existing record fields
+                  return await this.heartFailureRepository.save(existingRecord);
+              } else {
+                  const newRecord = this.heartFailureRepository.create(heartFailureDTO);
+                  return await this.heartFailureRepository.save(newRecord);
+              }
+          } catch (error) {
+              throw new InternalServerErrorException('Failed to save heart failure components');
+          }   
       }
 
       async getpredictionbyuserid(id_patient : number):Promise<any>{
-        const user = this.userService.getuserbyid(id_patient);
-        const HF = this.HeartFailureRepository.findOne({where:{id_patient}});
+        const patient = await this.userService.getUserById(id_patient);
+        const HF = await this.heartFailureRepository.findOne({ where: { patient } });
         var gender  = 1; 
-        if ((await user).gender = "Female")  gender = 0 ; 
-        const age  = calculateAge((await user).birthday) ; 
-        const diabetes = (await HF).diabetes  ; 
-        const anaemia = (await HF).anaemia ; 
-        const creatinine_phosphokinase = (await HF).creatinine_phosphokinase ; 
-        const high_blood_pressure = (await HF).high_blood_pressure;
-        const platelets = (await HF).platelets ; 
-        const serum_creatinine = (await HF).serum_creatinine ; 
-        const serum_sodium = (await HF).serum_sodium ; 
-        const smoking = (await HF).smoking ; 
-        const time = (await HF).time ; 
+        if ((patient).gender = "Female")  gender = 0 ; 
+        const age  = calculateAge((patient).birthday) ; 
+        const diabetes = (HF).diabetes  ; 
+        const anaemia = (HF).anaemia ; 
+        const creatinine_phosphokinase = (HF).creatinine_phosphokinase ; 
+        const high_blood_pressure = (HF).high_blood_pressure;
+        const platelets = (HF).platelets ; 
+        const serum_creatinine = (HF).serum_creatinine ; 
+        const serum_sodium = (HF).serum_sodium ; 
+        const smoking = (HF).smoking ; 
+        const time = (HF).time ; 
 
         return this.runPythonScript('heartfailure.py',[age,anaemia,creatinine_phosphokinase , diabetes , high_blood_pressure
           ,platelets , serum_creatinine,serum_sodium, gender,smoking,time])
