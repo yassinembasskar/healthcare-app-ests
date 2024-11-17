@@ -37,7 +37,6 @@ export class HeartFailureService {
         } catch (error) {
         console.error('Error processing heart failure data:', error);
 
-        // Re-throw with a user-friendly message
         if (error['statusCode']) {
             throw new Error(`${error.message}`);
         } else {

@@ -56,3 +56,17 @@ Ensure you have Flutter installed and configured on your system. Then, run the f
 ```bash
 flutter pub get
 ```
+
+#### 6. Backend Environment Setup
+Create a .env file in the backend folder and add the following variables:
+
+```env
+OPENAI_API_KEY=<your_openai_api_key>
+DATABASE_HOST=<your_database_host>
+DATABASE_PORT=<your_database_port>
+DATABASE_USERNAME=<your_database_username>
+DATABASE_PASSWORD=<your_database_password>
+DATABASE_NAME=<your_database_name>
+```
+
+Replace the placeholders (<...>) with the actual values for your environment.
