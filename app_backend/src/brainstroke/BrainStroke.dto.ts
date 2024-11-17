@@ -1,8 +1,9 @@
+import { User } from "src/user/patient/user.entity";
 import { BrainStroke } from "./BrainStroke.entity";
 
 export class BrainStrokeDTO {
     BrainStroke_prediction_id: number;
-    id_patient: number;
+    patient: User;
     hypertension: boolean;
     heart_disease: boolean;
     ever_married: string;
@@ -14,7 +15,7 @@ export class BrainStrokeDTO {
   
     constructor(entity: BrainStroke) {
       this.BrainStroke_prediction_id = entity.BrainStroke_prediction_id;
-      this.id_patient = entity.id_patient;
+      this.patient = entity.patient;
       this.hypertension = entity.hypertension;
       this.heart_disease = entity.heart_disease;
       this.ever_married = entity.ever_married;

@@ -1,34 +1,44 @@
-import { Controller, Post, Body, Get } from '@nestjs/common';
+import { Controller, Post, Body, Get, HttpException, HttpStatus, NotFoundException } from '@nestjs/common';
 import { BrainStrokeService } from './BrainStroke.service';
-import { BrainStroke } from './BrainStroke.entity';
 import { BrainStrokeDTO } from './BrainStroke.dto';
+import { Logger } from '@nestjs/common';
 
 @Controller('brainstroke')
 export class BrainStrokeController {
-  constructor(private readonly BrainStrokeService: BrainStrokeService) {}
+  private readonly logger = new Logger(BrainStrokeController.name);
+  constructor(private readonly brainStrokeService: BrainStrokeService) {}
 
   @Post('GetComponent')
-  async getcomponentsbyuserid(@Body('id_patient')id_patient:number){
-    console.log(id_patient);
-    return this.BrainStrokeService.getpredictioncomponenetsbyuserid(id_patient);
+  async getcomponentsbyuserid(@Body('id_patient') id_patient:number){
+    try {
+      this.logger.log(`Fetching components for patient ID: ${id_patient}`);
+      return await this.brainStrokeService.getpredictioncomponenetsbyuserid(id_patient);
+    } catch (error) {
+      this.logger.error(`Failed to fetch components for patient ID: ${id_patient}`, error.stack);
+      throw new HttpException('Unable to fetch components', HttpStatus.BAD_REQUEST);
+    }
   }
 
   @Post('SaveComponents')
   async savecomponenets(@Body()brainStrokeDTO : BrainStrokeDTO){
-    console.log('controller')
-    console.log(brainStrokeDTO);
-    return this.BrainStrokeService.saveComponents(brainStrokeDTO);
-  }
-
-  @Get('py')
-  async py(){
-    return this.BrainStrokeService.processAndRunScript(['Male', "80.0"," 0", "1", 'Yes', 'Private', 'Rural', "105.92", "32.5", 'never smoked']);
+    try {
+      return await this.brainStrokeService.saveComponents(brainStrokeDTO);
+    } catch (error) {
+      throw new HttpException('Unable to save components', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   @Post('Prediction')
-  async getpredictino(@Body('id_patient')id_patient : number){
-    return this.BrainStrokeService.getpredictionbyuserid(id_patient);
+  async getprediction(@Body('id_patient') id_patient : number){
+    try {
+      const prediction = await this.brainStrokeService.getpredictionbyuserid(id_patient);
+      if (!prediction || Object.values(prediction).some(value => value === null || value === 'unknown')) {
+        throw new NotFoundException('Prediction data is incomplete or missing for this user.');
+      }
+  
+      return prediction;
+    } catch (exception) {
+      throw new NotFoundException('Error fetching prediction: ' + exception.message);
+    }
   }
-
-
 }

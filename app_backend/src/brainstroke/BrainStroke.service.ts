@@ -5,10 +5,8 @@ import { Repository } from 'typeorm';
 import { BrainStroke } from './BrainStroke.entity';
 import { BrainStrokeDTO } from './BrainStroke.dto';
 import * as path from 'path';
-import { exec } from 'child_process';
-import { stdout } from 'process';
-import { UserService } from 'src/user/user.service';
-import { stringify } from 'querystring';
+import { spawn } from 'child_process';
+import { UserService } from 'src/user/patient/user.service';
 
 
 @Injectable()
@@ -21,66 +19,72 @@ export class BrainStrokeService {
     ) {}
 
     async getpredictioncomponenetsbyuserid(id_patient:number):Promise<BrainStroke|null>{
-        
-        
-        return this.BrainStrokeRepository.findOne({where:{id_patient}}) ;
+        const patient = await this.userService.getUserById(id_patient);
+        return this.BrainStrokeRepository.findOne({where:{patient}}) ;
     }
 
     async saveComponents(brainStrokeDTO: BrainStrokeDTO): Promise<BrainStroke> {
-        console.log(brainStrokeDTO);
-        
-        const id_patient =  brainStrokeDTO.id_patient  ; 
-        console.log(id_patient)
-        const existingRecord = await this.BrainStrokeRepository.findOne({where :{ id_patient :brainStrokeDTO.id_patient }});
-        console.log('service')
-        console.log(existingRecord)
+        const existingRecord = await this.BrainStrokeRepository.findOne({ where: { patient: brainStrokeDTO.patient } });
         if (existingRecord) {
-         
-          existingRecord.hypertension = brainStrokeDTO.hypertension;
-          existingRecord.heart_disease = brainStrokeDTO.heart_disease;
-          existingRecord.ever_married = brainStrokeDTO.ever_married;
-          existingRecord.work_type = brainStrokeDTO.work_type;
-          existingRecord.residence_type = brainStrokeDTO.residence_type;
-          existingRecord.avg_glucose_level = brainStrokeDTO.avg_glucose_level;
-          existingRecord.bmi = brainStrokeDTO.bmi;
-          existingRecord.smoking_status = brainStrokeDTO.smoking_status;
-
-          
-      
-          console.log(' saved' )
-          return this.BrainStrokeRepository.save(existingRecord);
+            Object.assign(existingRecord, brainStrokeDTO);
+            return this.BrainStrokeRepository.save(existingRecord);
         } else {
-          console.log('didnt save' )
-          return this.BrainStrokeRepository.save(brainStrokeDTO);
-
+            return this.BrainStrokeRepository.save(brainStrokeDTO);
         }
       }
         
 
       async getpredictionbyuserid(id_patient:number):Promise<any>{
-        const BR = this.BrainStrokeRepository.findOne({where :{ id_patient }});
-        const user = this.userService.getuserbyid(id_patient);
-        const gender : string = (await user).gender; 
-        const age : string = calculateAge((await user).birthday).toString() ; 
-        const hypertension : string = (await BR).hypertension.toString(); 
-        const heart_disease : string = (await BR).heart_disease.toString(); 
-        const ever_married : string = (await BR).ever_married ; 
-        const work_type : string =(await BR).work_type ; 
-        const Residence_type : string = (await BR).residence_type ; 
-        const avg_glucose_level : string = (await BR).avg_glucose_level.toString(); 
-        const bmi : string = (await BR).bmi.toString(); 
+          try {
+            const patient = await this.userService.getUserById(id_patient);
+            if (!patient) {
+              throw new Error(`User with ID ${id_patient} not found.`);
+            }
+            // Retrieve brain stroke data for the patient
+            const brainStrokeData = await this.BrainStrokeRepository.findOne({ where: { patient } });
+            if (!brainStrokeData) {
+              throw new Error(`Brain stroke data for user with ID ${id_patient} not found.`);
+            }
         
-        const smoking_status : string = (await BR).smoking_status; 
+            const age = calculateAge(patient.birthday);
+            if (isNaN(age)) {
+              throw new Error('Invalid birthday format. Unable to calculate age.');
+            }
         
-        return this.processAndRunScript([gender,age,hypertension,heart_disease,ever_married,work_type,Residence_type,avg_glucose_level,bmi,smoking_status]);
-      }
+            const userValues = [
+              patient.gender || 'unknown',
+              age.toString(),
+              brainStrokeData.hypertension?.toString() || '0',
+              brainStrokeData.heart_disease?.toString() || '0',
+              brainStrokeData.ever_married || 'unknown',
+              brainStrokeData.work_type || 'unknown',
+              brainStrokeData.residence_type || 'unknown',
+              brainStrokeData.avg_glucose_level?.toString() || '0.0',
+              brainStrokeData.bmi?.toString() || '0.0',
+              brainStrokeData.smoking_status || 'unknown'
+            ];
+        
+            const hasIncompleteInfo = userValues.some(value => value === '0' || value === 'unknown' || value === null || value === undefined);
+            if (hasIncompleteInfo) {
+              throw new Error('All fields must be filled with valid information.');
+
+            }
+        
+            return await this.processAndRunScript(userValues);
+        
+          } catch (error) {
+            console.error('Error processing brain stroke data:', error);
+            throw new Error('Failed to process brain stroke data. Please ensure all required information is filled and try again.');
+          }
+        }
 
       async processAndRunScript(values: string[]): Promise<any> {
         const transformedValues = this.transformCategoricalToNumbers(...values);
-        return this.runPythonScript('brainstroke.py', transformedValues.map(String));
-    }
+        return await this.runPythonScript('brainstroke.py', transformedValues);
+      }
 
       private transformCategoricalToNumbers(...values: string[]): number[] {
+
         const CSV_COLUMN_NAMES = ['gender','age', 'hypertension', 'heart_disease', 'ever_married','work_type',
          'Residence_type','avg_glucose_level', 'bmi','smoking_status'];
 
@@ -107,14 +111,25 @@ export class BrainStrokeService {
                 transformedValues.push(parseFloat(value));
             }
         }
-        console.log(transformedValues)
         return transformedValues;
     }
 
 
       
-  async runPythonScript(scriptName: string, args?: string[]): Promise<string|null|any> {
-
+  async runPythonScript(scriptName: string, args?: number[]): Promise<string|null|any> {
+        const scriptPath = path.resolve(__dirname, '../../src/brainstroke/', scriptName);
+        return new Promise((resolve, reject) => {
+            const pythonProcess = spawn('python', [scriptPath, ...args.map(String)]);
+            let output = '';
+            pythonProcess.stdout.on('data', (data) => {
+                output += data.toString();
+            });
+            pythonProcess.stderr.on('data', (data) => {
+                reject(data.toString());
+            });
+            pythonProcess.on('close', () => resolve(output.trim()));
+        });
+    /*
     return new Promise((resolve, reject) => {
       const { exec } = require('child_process');
       const argsString = args ? args.join(' ') : '';
@@ -136,7 +151,9 @@ export class BrainStrokeService {
         }
       });
     });
+    */
   }
+    
    
 }
 

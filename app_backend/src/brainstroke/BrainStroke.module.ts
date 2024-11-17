@@ -3,12 +3,12 @@ import { BrainStrokeController } from './BrainStroke.controller';
 import { BrainStrokeService } from './BrainStroke.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BrainStroke } from './BrainStroke.entity';
+import { UserModule } from 'src/user/patient/user.module';
+import { User } from 'src/user/patient/user.entity';
 
-import { forwardRef } from '@nestjs/common';
-import { UserModule } from 'src/user/user.module';
 @Module({
   imports: [UserModule,
-    TypeOrmModule.forFeature([BrainStroke]),
+    TypeOrmModule.forFeature([BrainStroke, User]),
 
   ],
   controllers: [BrainStrokeController],
