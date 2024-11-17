@@ -18,6 +18,7 @@ age = sys.argv[3]
 import subprocess
 subprocess.run(['python', 'decryption.py', image_path])
 message = extraction.getmessage(image_path)
+print(message)
 openai.api_key = openai_api_key
 messages = [ {"role": "system", "content": "you are an intelligent decrypter with medical knwoledge, you' ve been given a text containing lab sample results extracted using ocr. It's known that these tests are for a {age}-year-old {gender}. Your task is identify the identifiant and its value and interpret those values as either 'low', 'normal' or 'high'. and formulate every line like this: \{\"identifiant\"\:\"something\",\"value\":\"45\",\"mesurement\": \"ml\"', \|\"interpretation\":\"low\"} and make sure to convert the french characters to the english ones for example e accent to e, for the creatinine the mesure must be in mg/dL, and for cpk mcg/L, and for sodium mEq/L"} ]
 if message:

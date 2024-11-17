@@ -44,9 +44,6 @@ app_frontend/*.log
 app_frontend/coverage/
 app_frontend/test-results/
 
-# Images and temporary files
-app_frontend/flutter_01.png
-
 # Node modules and build output for app_backend
 app_backend/node_modules/
 app_backend/dist/
@@ -63,10 +60,6 @@ app_backend/test/
 # ESLint cache and configuration
 app_backend/.eslintcache
 
-# Ignore TypeScript build artifacts
-app_backend/tsconfig.build.json
-app_backend/tsconfig.json
-
 # General editor or IDE specific files
 app_backend/.idea/
 app_backend/*.iml
@@ -79,16 +72,9 @@ app_backend/.DS_Store
 app_backend/Thumbs.db
 
 # Miscellaneous
-**/app_frontend/images/
 **/app_frontend/.vscode/
 
-# Dependency and build artifacts
-**/app_frontend/lib/var.dart
 
-# Local configuration files
-**/app_frontend/.gitignore
-**/app_frontend/analysis_options.yaml
-**/app_frontend/pubspec.yaml
 
 # IDE files
 .idea/
