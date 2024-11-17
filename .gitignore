@@ -9,14 +9,10 @@ package-lock.json
 
 # Flutter related files to ignore in app_frontend
 app_frontend/.dart_tool/
-app_frontend/.flutter-plugins
-app_frontend/.flutter-plugins-dependencies
 app_frontend/.packages
 app_frontend/.pub-cache/
 app_frontend/.buildlog/
 app_frontend/.macos/
-app_frontend/.metadata
-app_frontend/pubspec.lock
 
 # Build directories and output
 app_frontend/build/
