@@ -11,29 +11,18 @@ import * as fs from 'fs';
 export class OcrController {
   constructor(private readonly ocrService: OcrService) {}
   @Post('process')
-  @UseInterceptors(
-    FileInterceptor('image', {
-      storage: diskStorage({
-        destination: './src/ocr/img',
-        filename: (req, file, callback) => {
-          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-          const ext = extname(file.originalname);
-          const filename = `${uniqueSuffix}${ext}`;
-          callback(null, filename);
-        },
-      }),
-    }),
-  )
-  async processImage(
-    @UploadedFile() file: Express.Multer.File,
-    @Body('id_patient') id: number,
+  @UseInterceptors(FileInterceptor('file'))
+  async predict(@UploadedFile() file: Express.Multer.File,
+    @Body('id_patient') id: number
   ): Promise<{ labtest: LabTestEntity; extractions: ExtractionEntity[] }> {
+  
+    if (!file) {    
+      console.error('File is undefined');
+      throw new Error('No file uploaded');
+    }
+
     try {
-      if (!file) {
-        throw new BadRequestException('No file uploaded');
-      }
-      console.log('hi tehre');
-      const imagePath = `./src/ocr/img/${file.filename}`;
+      const imagePath = `./src/ocr/img/${file}`;
       console.log(imagePath);
       const { extractions, labtest } = await this.ocrService.processImage(imagePath, id);
 
@@ -43,7 +32,7 @@ export class OcrController {
         } else {
           console.log('Image deleted successfully:', imagePath);
         }
-      });
+      });  
 
       return { labtest, extractions };
     } catch (error) {
