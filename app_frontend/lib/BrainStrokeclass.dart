@@ -1,5 +1,7 @@
 import 'package:app/user_storage.dart';
 
+
+
 class BrainStroke {
   int BrainStroke_prediction_id;
   int id_patient;
@@ -38,12 +40,16 @@ class BrainStroke {
       'smoking_status': smoking_status,
     };
   }
+
  
   static Future<BrainStroke> fromJson(Map<String, dynamic> json) async {
     final userId = await UserStorage.getUserId(); // Wait for the Future to complete.
     return BrainStroke(
       BrainStroke_prediction_id: json['BrainStroke_prediction_id'] as int,
       id_patient: userId ?? 0, // Handle null case.
+
+
+
       hypertension: json['hypertension'].toString(),
       heart_disease: json['heart_disease'].toString(),
       ever_married: json['ever_married'].toString(),
@@ -55,3 +61,5 @@ class BrainStroke {
     );
   }
 }
+
+

@@ -4,7 +4,10 @@ import 'package:app/HeartFailure.dart';
 import 'package:app/HeartFailureclass.dart';
 import 'package:app/History.dart';
 import 'package:app/aboutus.dart';
+
 import 'package:app/alzheimer.dart';
+
+
 import 'package:app/home.dart';
 import 'package:app/profile.dart';
 import 'package:app/usermanagment.dart';
@@ -91,6 +94,7 @@ void navigateToaboustus(BuildContext context){
     context,
     MaterialPageRoute(builder: (context) => aboutus()), 
   );
+
 }
 
 void navigateToalzheimer(BuildContext context){
@@ -98,4 +102,5 @@ void navigateToalzheimer(BuildContext context){
     context,
     MaterialPageRoute(builder: (context) => AlzheimerTestPage()), 
   );
+
 }

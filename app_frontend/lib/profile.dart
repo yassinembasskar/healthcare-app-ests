@@ -1,11 +1,14 @@
 import 'package:app/navigation.dart';
 import 'package:app/profile.dart';
+
 import 'package:app/user_storage.dart';
+
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:app/var.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
+
 import 'package:app/aboutus.dart';
 import 'package:app/navigation.dart';
 import 'package:flutter/foundation.dart';
@@ -15,6 +18,7 @@ import 'package:image_picker/image_picker.dart';
 
 import 'dart:typed_data';
 File? _image;
+
 class User {
   int id;
   String email;
@@ -202,7 +206,9 @@ class ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> getuser() async {
+
     int? id_patient = await UserStorage.getUserId();
+
     final url = '$ip/users/user';
     final response = await http.post(
       Uri.parse(url),
@@ -367,7 +373,9 @@ class ProfilePageState extends State<ProfilePage> {
         navigateTohistory(context);
         break;
       case 2:
+
       _Importimage();
+
         break;
       case 3:
         navigateToaboustus(context);
@@ -647,6 +655,7 @@ class ProfilePageState extends State<ProfilePage> {
       _fetchdata();
     });
   }
+
   
   void _Importimage() {
     showDialog(
@@ -720,4 +729,5 @@ class ProfilePageState extends State<ProfilePage> {
       );
     }
   }
+
 }

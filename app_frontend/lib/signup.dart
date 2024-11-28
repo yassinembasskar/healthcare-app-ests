@@ -3,7 +3,9 @@ import 'package:app/var.dart';
 import 'package:http/http.dart' as http;
 import 'package:app/navigation.dart';
 import 'package:flutter/material.dart';
+
 import 'user_storage.dart';
+
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -66,12 +68,14 @@ class _SignupPageState extends State<SignupPage> {
         showAlertDialog(context, "Signed up successfully");
         Map<String, dynamic> responseBody = jsonDecode(response.body);
         print(response.body);
+
         print(responseBody['idPatient']);
         await UserStorage.saveUserId(responseBody['idPatient']);
         int? userId = await UserStorage.getUserId();
         print('User ID saved: $userId');
         // id_patient = responseBody['idPatient'];
         // role = 'user';
+
         navigateTohome(context);
       } else {
         print('Error signing up: ${response.statusCode}');

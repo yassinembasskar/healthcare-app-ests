@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 import 'package:app/user_storage.dart';
+=======
+>>>>>>> origin/master
 import 'package:app/var.dart';
 import 'package:app/navigation.dart';
 import 'package:flutter/cupertino.dart';
@@ -107,7 +110,10 @@ class _HistoryState extends State<History> {
   }
 
   Future<void> getLabTestHistory() async {
+<<<<<<< HEAD
     int? id_patient = await UserStorage.getUserId();
+=======
+>>>>>>> origin/master
     final response = await http.post(
       Uri.parse('$ip/ocr/get'),
       body: jsonEncode({"id_patient": id_patient}),

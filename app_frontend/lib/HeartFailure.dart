@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+
 import 'package:app/aboutus.dart';
 import 'package:app/navigation.dart';
 import 'package:flutter/foundation.dart';
@@ -20,6 +21,7 @@ class HeartFailurePage extends StatefulWidget {
    HeartFailure heartfailure;
 
    HeartFailurePage({Key? key, required this.heartfailure})
+
       : super(key: key);
 
   @override
@@ -77,10 +79,12 @@ class HeartFailurePageState extends State<HeartFailurePage> {
 
         HeartFailure heartfailureresppp = HeartFailure.fromJson(responseBody);
 
+
         // navigateToHeartFailure(context, heartfailureresppp);
         setState(() {
           widget.heartfailure = heartfailureresppp;
         });
+
       } else {
         print(
             'Failed to save heartfailure components. Status code: ${response.statusCode}');
@@ -613,7 +617,10 @@ class HeartFailurePageState extends State<HeartFailurePage> {
         navigateTohistory(context);
         break;
       case 2:
+
      _Importimage();
+
+
         break;
       case 3:
         navigateToaboustus(context);
@@ -624,6 +631,7 @@ class HeartFailurePageState extends State<HeartFailurePage> {
       default:
     }
   }
+
 
   
   void _Importimage() {
@@ -698,4 +706,5 @@ class HeartFailurePageState extends State<HeartFailurePage> {
       );
     }
   }
+
 }

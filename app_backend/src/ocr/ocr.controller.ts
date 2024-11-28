@@ -1,14 +1,23 @@
+<<<<<<< HEAD
 import { Controller, Post, Body, UploadedFile, UseInterceptors, Get } from '@nestjs/common';
+=======
+import { Controller, Post, Body, UploadedFile, UseInterceptors, Get, BadRequestException } from '@nestjs/common';
+>>>>>>> origin/master
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { OcrService } from './ocr.service'; 
 import { LabTestEntity } from './labtest.entity';
 import { ExtractionEntity } from './extraction.entity';
+<<<<<<< HEAD
+=======
+import * as fs from 'fs';
+>>>>>>> origin/master
 
 @Controller('ocr')
 export class OcrController {
   constructor(private readonly ocrService: OcrService) {}
+<<<<<<< HEAD
 
   @Post('process')
   @UseInterceptors(
@@ -46,6 +55,40 @@ export class OcrController {
     return { labtest, extractions };
   }
 
+=======
+  @Post('process')
+  @UseInterceptors(FileInterceptor('file'))
+  async predict(@UploadedFile() file: Express.Multer.File,
+    @Body('id_patient') id: number
+  ): Promise<{ labtest: LabTestEntity; extractions: ExtractionEntity[] }> {
+  
+    if (!file) {    
+      console.error('File is undefined');
+      throw new Error('No file uploaded');
+    }
+
+    try {
+      const imagePath = `./src/ocr/img/${file}`;
+      console.log(imagePath);
+      const { extractions, labtest } = await this.ocrService.processImage(imagePath, id);
+
+      fs.unlink(imagePath, (err) => {
+        if (err) {
+          console.error('Failed to delete image:', err);
+        } else {
+          console.log('Image deleted successfully:', imagePath);
+        }
+      });  
+
+      return { labtest, extractions };
+    } catch (error) {
+      console.error('Error processing image:', error);
+      throw new Error('Image processing failed');
+    }
+  }
+
+
+>>>>>>> origin/master
   @Post('save')
   async saveResults(
     @Body() body: { labtest: LabTestEntity; extractions: ExtractionEntity[] },

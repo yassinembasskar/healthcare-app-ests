@@ -1,6 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
+
 import 'package:app/navigation.dart';
+
 import 'package:app/var.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +11,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'History.dart';
+
 import 'package:app/aboutus.dart';
 import 'package:app/navigation.dart';
 import 'package:flutter/foundation.dart';
@@ -18,6 +21,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:typed_data';
 File? _image;
+
 // class Extraction {
 //   final int id_extractions;
 //   final int test_id;
@@ -128,6 +132,7 @@ class _TestResultsState extends State<TestResults> {
         ),
       ),
       body: Testresults(),
+
       bottomNavigationBar: Container(
         padding: EdgeInsets.symmetric(vertical: 0),
         color: Color(0xFFD7EFF7),
@@ -215,6 +220,7 @@ class _TestResultsState extends State<TestResults> {
           ],
         ),
       ),
+
     );
   }
 

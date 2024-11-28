@@ -1,6 +1,7 @@
 // import 'dart:convert';
 import 'package:app/navigation.dart';
 import 'package:app/user_storage.dart';
+
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -85,6 +86,7 @@ class _LoginPageState extends State<LoginPage> {
     );
     if (response.statusCode == 200 || response.statusCode == 201) {
       Map<String, dynamic> responseBody = jsonDecode(response.body);
+
       // String username = responseBody['fullname'];
       // String email = responseBody['email'];
       // role = responseBody['role'];
@@ -98,16 +100,19 @@ class _LoginPageState extends State<LoginPage> {
       print('User role saved: $userRole');
       if (userRole == 'admin') {
         print('the admin  have been looged in seccesfully');
+
         if (rememberMe) {
           await wipeAndInsertLines('var.dart', 'admin', -1);
         }
         navigateToadmin(context);
       } else {
+
         if (userRole == 'patient') {
           
           print('the user  have been looged in seccesfully');
           if (rememberMe) {
             await wipeAndInsertLines('var.dart', 'user', id_patient ?? 0);
+
           }
           navigateTohome(context);
         } else {

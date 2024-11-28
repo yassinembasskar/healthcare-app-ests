@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+
 import 'package:app/aboutus.dart';
 import 'package:app/navigation.dart';
 import 'package:flutter/foundation.dart';
@@ -18,6 +19,9 @@ class BrainStrockPage extends StatefulWidget {
   BrainStroke brainStroke; // Removed `final` to make it mutable
 
   BrainStrockPage({
+
+
+
     Key? key,
     required this.brainStroke,
   }) : super(key: key);
@@ -73,6 +77,7 @@ class _BrainStrockPageState extends State<BrainStrockPage> {
         final Map<String, dynamic> responseBody = json.decode(response.body);
         print('response : $responseBody');
 
+
         BrainStroke brainStrokeResponse = await BrainStroke.fromJson(responseBody) ;
         print(brainStrokeResponse);
 
@@ -80,6 +85,8 @@ class _BrainStrockPageState extends State<BrainStrockPage> {
         setState(() {
           widget.brainStroke = brainStrokeResponse;
         });
+
+
       } else {
         print(
             'Failed to save BrainStroke components. Status code: ${response.statusCode}');
@@ -419,8 +426,10 @@ class _BrainStrockPageState extends State<BrainStrockPage> {
 
   Widget testitem(String name, dynamic? value, String type) {
     Widget childWidget;
+
     print(value);
     if (value != null && value != '' && value != 'null' ) {
+
       childWidget = Image.asset('images/done.png');
     } else {
       childWidget = Image.asset('images/lock.png');
@@ -492,7 +501,6 @@ class _BrainStrockPageState extends State<BrainStrockPage> {
       default:
     }
   }
-
 
   void showPopup(String name, String type, BuildContext context) {
     TextEditingController _controller = TextEditingController();
@@ -693,6 +701,7 @@ class _BrainStrockPageState extends State<BrainStrockPage> {
   }
 
 
+
   
   void _Importimage() {
     showDialog(
@@ -766,4 +775,5 @@ class _BrainStrockPageState extends State<BrainStrockPage> {
       );
     }
   }
+
 }

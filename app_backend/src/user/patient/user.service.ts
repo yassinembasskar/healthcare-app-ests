@@ -93,11 +93,9 @@ export class UserService {
             const fullNameAdmin = await this.adminRepository.findOne({ where :{username: user.fullName} });
             const emailAdmin = await this.adminRepository.findOne({ where :{email: user.email} });
             if(emailAdmin){
-              console.log('e')
               throw new EmailAlreadyExist();
             }
             if(fullNameAdmin){
-              console.log('e')
               throw new FullNameAlreadyExist();
             }
 
