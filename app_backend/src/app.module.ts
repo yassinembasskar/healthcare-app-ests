@@ -9,7 +9,8 @@ import { AuthModule } from './user/auth/auth.module';
 import { BrainStrokeModule } from './brainstroke/BrainStroke.module';
 import { HeartFailureModule } from './heartfailure/HeartFailure.module';
 import { OcrModule } from './ocr/ocr.module';
-
+import { AlzheimerModule } from './alzheimer/alzheimer.module';
+import { MulterModule } from '@nestjs/platform-express';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -35,7 +36,10 @@ import { OcrModule } from './ocr/ocr.module';
     AuthModule,
     BrainStrokeModule,
     HeartFailureModule,
-    OcrModule,
+    OcrModule,AlzheimerModule,
+    MulterModule.register({
+      dest: './uploads', // Set the directory where files will be temporarily stored
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -45,7 +45,7 @@ app_backend/node_modules/
 app_backend/dist/
 
 # Python cache files
-app_backend/__pycache__/
+app_backend/_pycache_/
 
 # Environment files (sensitive information)
 app_backend/.env

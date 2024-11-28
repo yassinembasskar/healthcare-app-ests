@@ -1,10 +1,23 @@
 import 'package:app/navigation.dart';
 import 'package:app/profile.dart';
+
+import 'package:app/user_storage.dart';
+
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:app/var.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
+
+import 'package:app/aboutus.dart';
+import 'package:app/navigation.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+
+
+import 'dart:typed_data';
+File? _image;
 
 class User {
   int id;
@@ -193,6 +206,9 @@ class ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> getuser() async {
+
+    int? id_patient = await UserStorage.getUserId();
+
     final url = '$ip/users/user';
     final response = await http.post(
       Uri.parse(url),
@@ -357,6 +373,9 @@ class ProfilePageState extends State<ProfilePage> {
         navigateTohistory(context);
         break;
       case 2:
+
+      _Importimage();
+
         break;
       case 3:
         navigateToaboustus(context);
@@ -636,4 +655,79 @@ class ProfilePageState extends State<ProfilePage> {
       _fetchdata();
     });
   }
+
+  
+  void _Importimage() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          title: Text(
+            "Choose your picture ",
+            style: TextStyle(fontSize: 17),
+            textAlign: TextAlign.center,
+          ),
+          actions: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () => _pickImage(ImageSource.camera),
+                  child: Container(
+                    height: 130,
+                    width: 120,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.lightBlue,
+                    ),
+                    child: Image.asset(
+                      'images/camera.jpg',
+                      width: 100,
+                      height: 100,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 15,
+                ),
+                GestureDetector(
+                  onTap: () => _pickImage(ImageSource.gallery),
+                  child: Container(
+                    height: 130,
+                    width: 120,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.lightBlue,
+                    ),
+                    child: Image.asset(
+                      'images/file.jpg',
+                      width: 50,
+                      height: 50,
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: source);
+
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ConfirmPage()),
+      );
+    }
+  }
+
 }

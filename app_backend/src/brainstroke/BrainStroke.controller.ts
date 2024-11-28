@@ -25,7 +25,7 @@ export class BrainStrokeController {
       return await this.brainStrokeService.saveComponents(brainStrokeDTO);
     } catch (error) {
       throw new HttpException('Unable to save components', HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    } 
   }
 
   @Post('Prediction')

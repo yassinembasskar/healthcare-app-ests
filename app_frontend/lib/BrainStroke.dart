@@ -6,10 +6,22 @@ import 'package:flutter/widgets.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-class BrainStrockPage extends StatefulWidget {
-  final BrainStroke brainStroke;
+import 'package:app/aboutus.dart';
+import 'package:app/navigation.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
-  const BrainStrockPage({
+import 'dart:io';
+import 'dart:typed_data';
+File? _image;
+class BrainStrockPage extends StatefulWidget {
+  BrainStroke brainStroke; // Removed `final` to make it mutable
+
+  BrainStrockPage({
+
+
+
     Key? key,
     required this.brainStroke,
   }) : super(key: key);
@@ -65,10 +77,16 @@ class _BrainStrockPageState extends State<BrainStrockPage> {
         final Map<String, dynamic> responseBody = json.decode(response.body);
         print('response : $responseBody');
 
-        BrainStroke brainStrokeResponse = BrainStroke.fromJson(responseBody);
+
+        BrainStroke brainStrokeResponse = await BrainStroke.fromJson(responseBody) ;
         print(brainStrokeResponse);
 
-        navigateToBrainstroke(context, brainStrokeResponse);
+        // navigateToBrainstroke(context, brainStrokeResponse);
+        setState(() {
+          widget.brainStroke = brainStrokeResponse;
+        });
+
+
       } else {
         print(
             'Failed to save BrainStroke components. Status code: ${response.statusCode}');
@@ -408,7 +426,10 @@ class _BrainStrockPageState extends State<BrainStrockPage> {
 
   Widget testitem(String name, dynamic? value, String type) {
     Widget childWidget;
-    if (value != null && value != '') {
+
+    print(value);
+    if (value != null && value != '' && value != 'null' ) {
+
       childWidget = Image.asset('images/done.png');
     } else {
       childWidget = Image.asset('images/lock.png');
@@ -469,6 +490,7 @@ class _BrainStrockPageState extends State<BrainStrockPage> {
         navigateTohistory(context);
         break;
       case 2:
+      _Importimage();
         break;
       case 3:
         navigateToaboustus(context);
@@ -677,4 +699,81 @@ class _BrainStrockPageState extends State<BrainStrockPage> {
     }
     saveBrainStrokeComponents();
   }
+
+
+
+  
+  void _Importimage() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          title: Text(
+            "Choose your picture ",
+            style: TextStyle(fontSize: 17),
+            textAlign: TextAlign.center,
+          ),
+          actions: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () => _pickImage(ImageSource.camera),
+                  child: Container(
+                    height: 130,
+                    width: 120,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.lightBlue,
+                    ),
+                    child: Image.asset(
+                      'images/camera.jpg',
+                      width: 100,
+                      height: 100,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 15,
+                ),
+                GestureDetector(
+                  onTap: () => _pickImage(ImageSource.gallery),
+                  child: Container(
+                    height: 130,
+                    width: 120,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.lightBlue,
+                    ),
+                    child: Image.asset(
+                      'images/file.jpg',
+                      width: 50,
+                      height: 50,
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: source);
+
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ConfirmPage()),
+      );
+    }
+  }
+
 }

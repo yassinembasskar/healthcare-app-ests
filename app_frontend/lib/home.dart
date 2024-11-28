@@ -11,6 +11,8 @@ import 'navigation.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+import 'package:app/user_storage.dart';
+
 File? _image;
 
 class HomePage extends StatefulWidget {
@@ -23,9 +25,12 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
+  
   bool isSelected = false;
 
   Future<void> getBrainStrokeComponents() async {
+    int? id_patient = await UserStorage.getUserId();
+
     final url = Uri.parse('$ip/BrainStroke/GetComponent');
 
     try {
@@ -41,7 +46,9 @@ class _HomePageState extends State<HomePage> {
         final Map<String, dynamic> responseBody = json.decode(response.body);
         print('response : $responseBody');
 
-        BrainStroke brainStrokeResponse = BrainStroke.fromJson(responseBody);
+
+        BrainStroke brainStrokeResponse = await BrainStroke.fromJson(responseBody) ;
+
         print(brainStrokeResponse);
 
         navigateToBrainstroke(context, brainStrokeResponse);
@@ -55,6 +62,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> getHeartFailureComponents() async {
+
+    int? id_patient = await UserStorage.getUserId();
+
     final url = Uri.parse('$ip/HeartFailure/GetComponent');
 
     try {
@@ -200,9 +210,13 @@ class _HomePageState extends State<HomePage> {
   }
 
   Container Home() {
-    return Container(
-      width: double.infinity,
-      color: Color(0xFFD7EFF7),
+
+  return Container(
+    width: double.infinity,
+    color: Color(0xFFD7EFF7),
+    child: SingleChildScrollView(  // Add this to make the content scrollable
+
+
       child: Column(
         children: [
           SizedBox(
@@ -210,7 +224,10 @@ class _HomePageState extends State<HomePage> {
           ),
           GestureDetector(
             onTap: () {
-              print("heart fialure tapped!");
+
+              print("heart failure tapped!");
+
+
               getHeartFailureComponents();
             },
             child: TestCard('HEART FAILURE TEST',
@@ -227,10 +244,25 @@ class _HomePageState extends State<HomePage> {
             child: TestCard('BRAIN STROKE TEST',
                 'Evaluate your risk of experiencing a brain stroke using our advanced AI model. Receive tailored advice to help you manage and mitigate potential risks.'),
           ),
+
+          SizedBox(
+            height: 50,
+          ),
+          GestureDetector(
+            onTap: () {
+              print("alzheimer tapped!");
+              navigateToalzheimer(context);
+            },
+            child: TestCard('ALZHEIMER TEST',
+                "Evaluate your risk of developing Alzheimer's disease with our advanced AI model. Gain personalized insights and recommendations to support early intervention and promote cognitive health."),
+          ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
+
+
 
   Container TestCard(String testname, String discription) {
     return Container(

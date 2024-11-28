@@ -1,6 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:app/navigation.dart';
+
 import 'package:app/var.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +11,17 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'History.dart';
+
+import 'package:app/aboutus.dart';
+import 'package:app/navigation.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+
+import 'dart:io';
+import 'dart:typed_data';
+File? _image;
+
 // class Extraction {
 //   final int id_extractions;
 //   final int test_id;
@@ -119,6 +132,95 @@ class _TestResultsState extends State<TestResults> {
         ),
       ),
       body: Testresults(),
+
+      bottomNavigationBar: Container(
+        padding: EdgeInsets.symmetric(vertical: 0),
+        color: Color(0xFFD7EFF7),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: <Widget>[
+            Container(
+              color: Colors.white,
+              padding: EdgeInsets.all(14),
+              child: IconButton(
+                icon: Icon(
+                  Icons.home,
+                  size: 36,
+                ),
+                onPressed: () => _onItemTapped(0),
+                color: _selectedIndex == 0 ? Color(0xFF519CD7) : Colors.black,
+              ),
+            ),
+            Container(
+                margin: EdgeInsets.all(0),
+                padding: EdgeInsets.all(14),
+                color: Colors.white,
+                child: IconButton(
+                  icon: Icon(
+                    Icons.history,
+                    size: 36,
+                  ),
+                  onPressed: () => _onItemTapped(1),
+                  color: _selectedIndex == 1 ? Color(0xFF519CD7) : Colors.black,
+                )),
+            Container(
+                padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(40),
+                      topRight: Radius.circular(40),
+                    )),
+                child: Container(
+                  decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 5,
+                          blurRadius: 7,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
+                      color: Color(0xFF519CD7),
+                      borderRadius: BorderRadius.circular(40)),
+                  margin: EdgeInsets.fromLTRB(0, 0, 0, 50),
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.camera_alt,
+                      size: 34,
+                    ),
+                    onPressed: () => _onItemTapped(2),
+                    color: Colors.black,
+                  ),
+                )),
+            Container(
+              color: Colors.white,
+              padding: EdgeInsets.all(14),
+              child: IconButton(
+                icon: Icon(
+                  Icons.support_agent_outlined,
+                  size: 36,
+                ),
+                onPressed: () => _onItemTapped(3),
+                color: _selectedIndex == 3 ? Color(0xFF519CD7) : Colors.black,
+              ),
+            ),
+            Container(
+              color: Colors.white,
+              padding: EdgeInsets.all(14),
+              child: IconButton(
+                icon: Icon(
+                  Icons.person,
+                  size: 36,
+                ),
+                onPressed: () => _onItemTapped(4),
+                color: _selectedIndex == 4 ? Color(0xFF519CD7) : Colors.black,
+              ),
+            )
+          ],
+        ),
+      ),
+
     );
   }
 
@@ -344,5 +446,99 @@ class _TestResultsState extends State<TestResults> {
     setState(() {
       _selectedIndex = index;
     });
+    switch (index) {
+      case 0:
+        navigateTohome(context);
+        break;
+      case 1:
+        navigateTohistory(context);
+        break;
+      case 2:
+      _Importimage();
+        break;
+      case 3:
+        navigateToaboustus(context);
+        break;
+      case 4:
+        navigateToprofile(context);
+        break;
+      default:
+    }
+  }
+
+
+    
+  
+  void _Importimage() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          title: Text(
+            "Choose your picture ",
+            style: TextStyle(fontSize: 17),
+            textAlign: TextAlign.center,
+          ),
+          actions: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () => _pickImage(ImageSource.camera),
+                  child: Container(
+                    height: 130,
+                    width: 120,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.lightBlue,
+                    ),
+                    child: Image.asset(
+                      'images/camera.jpg',
+                      width: 100,
+                      height: 100,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 15,
+                ),
+                GestureDetector(
+                  onTap: () => _pickImage(ImageSource.gallery),
+                  child: Container(
+                    height: 130,
+                    width: 120,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.lightBlue,
+                    ),
+                    child: Image.asset(
+                      'images/file.jpg',
+                      width: 50,
+                      height: 50,
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: source);
+
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ConfirmPage()),
+      );
+    }
   }
 }
