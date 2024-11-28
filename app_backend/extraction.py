@@ -15,7 +15,6 @@ title_erosion_window = 'Erosion Demo'
 title_dilation_window = 'Dilation Demo'
 
 def getmessage(imagefile):
-
     img_path = imagefile
     image = cv2.imread(img_path)
     if image is None:

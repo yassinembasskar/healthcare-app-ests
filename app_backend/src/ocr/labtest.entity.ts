@@ -17,6 +17,9 @@ export class LabTestEntity {
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   test_date: Date;
 
+  @Column({nullable: true})
+  doctor_type: string;
+
   @OneToMany(() => ExtractionEntity, extraction => extraction.test)
   extractions: ExtractionEntity[];
 }
