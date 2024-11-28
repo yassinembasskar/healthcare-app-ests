@@ -1,0 +1,83 @@
+# Node modules (root and nested)
+node_modules/
+
+# Logs
+*.log
+
+# Root-level files to ignore
+package-lock.json
+
+# Flutter related files to ignore in app_frontend
+app_frontend/.dart_tool/
+app_frontend/.packages
+app_frontend/.pub-cache/
+app_frontend/.buildlog/
+app_frontend/.macos/
+
+# Build directories and output
+app_frontend/build/
+app_frontend/android/.gradle/
+app_frontend/android/app/build/
+app_frontend/ios/Flutter/Flutter.framework
+app_frontend/ios/Flutter/Flutter.podspec
+app_frontend/ios/Flutter/App.framework
+app_frontend/ios/.symlinks/
+app_frontend/ios/Pods/
+app_frontend/linux/build/
+app_frontend/macos/Flutter/ephemeral/
+app_frontend/macos/Flutter/App.framework
+app_frontend/macos/Flutter/Flutter.framework
+app_frontend/windows/build/
+app_frontend/web/.dart_tool/
+app_frontend/web/compile.lock
+
+# IDE specific files
+app_frontend/*.iml
+app_frontend/.idea/
+app_frontend/*.log
+
+# Test and coverage reports
+app_frontend/coverage/
+app_frontend/test-results/
+
+# Node modules and build output for app_backend
+app_backend/node_modules/
+app_backend/dist/
+
+# Python cache files
+app_backend/_pycache_/
+
+# Environment files (sensitive information)
+app_backend/.env
+
+# Test output
+app_backend/test/
+
+# ESLint cache and configuration
+app_backend/.eslintcache
+
+# General editor or IDE specific files
+app_backend/.idea/
+app_backend/*.iml
+
+# NestJS CLI configuration
+app_backend/nest-cli.json
+
+# Temporary or system files
+app_backend/.DS_Store
+app_backend/Thumbs.db
+
+# Miscellaneous
+**/app_frontend/.vscode/
+
+
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+
+# Temporary files
+*.swp
+*.swo
+*.bak

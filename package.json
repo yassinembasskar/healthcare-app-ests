@@ -1,0 +1,44 @@
+{
+  "name": "pfe_project",
+  "version": "0.0.1",
+  "description": "Project combining Flutter frontend and NestJS backend",
+  "author": "Moutaoikkil Basskar Yassine, Tanani Mouhssin, Boussaoudi Ahmed Amine",
+  "private": true,
+  "license": "UNLICENSED",
+  "workspaces": [
+    "app_backend"
+  ],
+  "scripts": {
+    "build": "npm --workspace=app_backend run build",
+    "format": "npm --workspace=app_backend run format",
+    "start": "npm --workspace=app_backend run start",
+    "start:dev": "npm --workspace=app_backend run start:dev",
+    "start:debug": "npm --workspace=app_backend run start:debug",
+    "start:prod": "npm --workspace=app_backend run start:prod",
+    "lint": "npm --workspace=app_backend run lint",
+    "test": "npm --workspace=app_backend run test",
+    "test:watch": "npm --workspace=app_backend run test:watch",
+    "test:cov": "npm --workspace=app_backend run test:cov",
+    "test:debug": "npm --workspace=app_backend run test:debug",
+    "test:e2e": "npm --workspace=app_backend run test:e2e",
+    "start:frontend": "cd app_frontend && flutter run",
+    "start:backend": "cd app_backend && npm run start",
+    "start:backend:dev": "cd app_backend && npm run start:dev",
+    "start:all": "npm run start:frontend && npm run start:backend"
+  },
+  "dependencies": {
+    "@nestjs/config": "^3.3.0",
+    "@nestjs/platform-express": "^10.4.8",
+    "@typescript-eslint/eslint-plugin": "^8.13.0",
+    "@typescript-eslint/parser": "^8.13.0",
+    "axios": "^1.7.7",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "dotenv": "^16.4.5",
+    "eslint": "^9.14.0",
+    "glob": "^9.0.0",
+    "multer": "^1.4.5-lts.1",
+    "rimraf": "^4.0.0",
+    "superagent": "^9.0.0"
+  }
+}
