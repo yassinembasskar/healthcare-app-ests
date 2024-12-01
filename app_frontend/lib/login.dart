@@ -1,10 +1,13 @@
 // import 'dart:convert';
 import 'package:app/navigation.dart';
+import 'package:app/user_storage.dart';
+
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'var.dart';
 import 'dart:io';
+
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -84,22 +87,33 @@ class _LoginPageState extends State<LoginPage> {
     );
     if (response.statusCode == 200 || response.statusCode == 201) {
       Map<String, dynamic> responseBody = jsonDecode(response.body);
-      String username = responseBody['fullname'];
-      String email = responseBody['email'];
-      role = responseBody['role'];
 
-      if (role == 'admin') {
-        print('the admin $username have been looged in seccesfully');
-        if (rememberMe) {
-          await wipeAndInsertLines('var.dart', 'admin', -1);
-        }
-        navigateToadmin(context);
-      } else {
-        if (role == 'user') {
-          id_patient = responseBody['idPatient'];
-          print('the user $username have been looged in seccesfully');
+      // String username = responseBody['fullname'];
+      // String email = responseBody['email'];
+      // role = responseBody['role'];
+      print(responseBody);
+      await UserStorage.saveUserId(responseBody['userId']);
+      int? id_patient = await UserStorage.getUserId();
+      await UserStorage.saveUserRole(responseBody['role']);
+      String? userRole = await UserStorage.getUserRole();
+
+      print('User ID saved: $id_patient');
+      print('User role saved: $userRole');
+      
+      if (userRole == 'Doctor') {
+        print('the Doctor  have been looged in seccesfully');
           if (rememberMe) {
-            await wipeAndInsertLines('var.dart', 'user', id_patient);
+            await wipeAndInsertLines('var.dart', 'user', id_patient ?? 0);
+          }
+        navigateTodoctor(context);
+      } else {
+
+        if (userRole == 'patient') {
+          
+          print('the user  have been looged in seccesfully');
+          if (rememberMe) {
+            await wipeAndInsertLines('var.dart', 'user', id_patient ?? 0);
+
           }
           navigateTohome(context);
         } else {

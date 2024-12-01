@@ -3,9 +3,10 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UserModule } from '../patient/user.module';
 import { AdminModule } from '../admin/admin.module';
+import { DoctorModule } from '../doctor/doctor.module';
 
 @Module({
-  imports: [UserModule,AdminModule],
+  imports: [UserModule,DoctorModule],
   controllers: [AuthController],
   providers: [AuthService],
 })

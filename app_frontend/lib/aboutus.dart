@@ -1,6 +1,10 @@
 import 'package:app/History.dart';
 import 'package:app/navigation.dart';
 import 'package:app/testresults.dart';
+
+import 'package:app/user_storage.dart';
+
+
 import 'package:app/var.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +34,7 @@ class aboutusState extends State<aboutus> {
   int _selectedIndex = 0;
 
   bool isSelected = false;
+  
 
   @override
   Widget build(BuildContext context) {
@@ -401,6 +406,10 @@ class aboutusState extends State<aboutus> {
         navigateTohistory(context);
         break;
       case 2:
+
+      _Importimage();
+
+
         break;
       case 3:
         navigateToaboustus(context);
@@ -533,6 +542,10 @@ class ConfirmPage extends StatelessWidget {
   }
 
   void sendImage(BuildContext context) async {
+
+    int? id_patient = await UserStorage.getUserId();
+
+
     if (_image == null) {
       print('No image selected.');
       return;

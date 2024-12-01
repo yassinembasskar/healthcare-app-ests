@@ -3,6 +3,9 @@ import 'package:app/BrainStroke.dart';
 import 'package:app/BrainStrokeclass.dart';
 import 'package:app/HeartFailure.dart';
 import 'package:app/HeartFailureclass.dart';
+import 'package:app/alzheimer.dart';
+import 'package:app/apointement.dart';
+
 import 'package:app/login.dart';
 import 'package:app/profile.dart';
 import 'package:app/usermanagment.dart';
@@ -29,7 +32,9 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 77, 105, 230)),
         useMaterial3: true,
       ),
-      home: (id_patient == -1 && role == 'admin') ? usermanagment() : (id_patient != -1 && role == 'user') ? HomePage() : LoginPage()
+
+      home: doctorlist()
+
     );
   }
 }
