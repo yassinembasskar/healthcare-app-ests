@@ -40,7 +40,7 @@ import { ScheduleModule } from './Schedule/schedule.module';
     BrainStrokeModule,
     HeartFailureModule,
     OcrModule,AlzheimerModule,
-    AppointmentModule,ScheduleModule,
+    AppointmentModule,ScheduleModule,DoctorModule,
     MulterModule.register({
       dest: './uploads', // Set the directory where files will be temporarily stored
     }),
