@@ -6,6 +6,7 @@ import 'package:app/History.dart';
 import 'package:app/aboutus.dart';
 
 import 'package:app/alzheimer.dart';
+import 'package:app/doctorpage.dart';
 
 
 import 'package:app/home.dart';
@@ -75,10 +76,10 @@ void navigateToprofile(BuildContext context){
 
 
 
-void navigateToadmin(BuildContext context){
+void navigateTodoctor(BuildContext context){
   Navigator.push(
     context,
-    MaterialPageRoute(builder: (context) => usermanagment()), 
+    MaterialPageRoute(builder: (context) => Doctorpage()), 
   );
 }
 

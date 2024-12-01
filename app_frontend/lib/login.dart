@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'var.dart';
 import 'dart:io';
 
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -98,13 +99,13 @@ class _LoginPageState extends State<LoginPage> {
 
       print('User ID saved: $id_patient');
       print('User role saved: $userRole');
-      if (userRole == 'admin') {
-        print('the admin  have been looged in seccesfully');
-
-        if (rememberMe) {
-          await wipeAndInsertLines('var.dart', 'admin', -1);
-        }
-        navigateToadmin(context);
+      
+      if (userRole == 'Doctor') {
+        print('the Doctor  have been looged in seccesfully');
+          if (rememberMe) {
+            await wipeAndInsertLines('var.dart', 'user', id_patient ?? 0);
+          }
+        navigateTodoctor(context);
       } else {
 
         if (userRole == 'patient') {

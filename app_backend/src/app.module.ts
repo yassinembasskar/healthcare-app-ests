@@ -11,6 +11,9 @@ import { HeartFailureModule } from './heartfailure/HeartFailure.module';
 import { OcrModule } from './ocr/ocr.module';
 import { AlzheimerModule } from './alzheimer/alzheimer.module';
 import { MulterModule } from '@nestjs/platform-express';
+import { DoctorModule } from './user/doctor/doctor.module';
+import { AppointmentModule } from './appointment/appointment.module';
+import { ScheduleModule } from './Schedule/schedule.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -32,11 +35,12 @@ import { MulterModule } from '@nestjs/platform-express';
       inject: [ConfigService],
     }),
     forwardRef(() => UserModule),
-    forwardRef(() => AdminModule),
+    forwardRef(() => DoctorModule),
     AuthModule,
     BrainStrokeModule,
     HeartFailureModule,
     OcrModule,AlzheimerModule,
+    AppointmentModule,ScheduleModule,
     MulterModule.register({
       dest: './uploads', // Set the directory where files will be temporarily stored
     }),

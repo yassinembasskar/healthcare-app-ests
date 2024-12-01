@@ -4,6 +4,7 @@ import 'package:app/BrainStrokeclass.dart';
 import 'package:app/HeartFailure.dart';
 import 'package:app/HeartFailureclass.dart';
 import 'package:app/alzheimer.dart';
+import 'package:app/apointement.dart';
 
 import 'package:app/login.dart';
 import 'package:app/profile.dart';
@@ -32,7 +33,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
 
-      home: LoginPage()
+      home: doctorlist()
 
     );
   }

@@ -37,7 +37,7 @@ class _HomePageState extends State<HomePage> {
       final response = await http.post(
         url,
         body: jsonEncode({"id_patient": id_patient}),
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'application/json'}, 
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {

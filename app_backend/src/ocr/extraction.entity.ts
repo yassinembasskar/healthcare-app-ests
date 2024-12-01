@@ -1,9 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, ManyToOne } from 'typeorm';
 import { LabTestEntity } from './labtest.entity';
-<<<<<<< HEAD
-=======
 import { AdditionalInfo } from './additionalInfos.interface';
->>>>>>> origin/master
 
 @Entity({name:'extractions'})
 export class ExtractionEntity {
@@ -25,9 +22,6 @@ export class ExtractionEntity {
 
   @Column({ default: 'unidentified' })
   interpretation: string;
-<<<<<<< HEAD
-  
-=======
 
   @Column()
   needed: Boolean;
@@ -37,5 +31,4 @@ export class ExtractionEntity {
 
   @Column({ type: 'jsonb', nullable: true })
   additional_info: AdditionalInfo;
->>>>>>> origin/master
 }
