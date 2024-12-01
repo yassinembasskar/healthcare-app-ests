@@ -89,8 +89,8 @@ class Doctor {
 // Fetch Doctors
 Future<List<Doctor>> fetchDoctors({String? speciality}) async {
   final String url = speciality != null
-      ? 'http://localhost:3000/doctors/filter-by-speciality?speciality=$speciality'
-      : 'http://localhost:3000/doctors';
+      ? '$ip/doctors/filter-by-speciality?speciality=$speciality'
+      : '$ip/doctors';
 
   try {
     final response = await http.get(Uri.parse(url));
